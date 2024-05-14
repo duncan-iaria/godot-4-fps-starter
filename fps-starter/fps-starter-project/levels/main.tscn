@@ -1,0 +1,66 @@
+[gd_scene load_steps=11 format=3 uid="uid://cug4dqlmbhw8e"]
+
+[ext_resource type="Material" uid="uid://bc7ivqu85hjao" path="res://assets/materials/grid_material_01.tres" id="1_r0qbb"]
+[ext_resource type="Texture2D" uid="uid://c8lwhnsitehxt" path="res://assets/textures/industrial_sunset_puresky_4k.hdr" id="1_ru68g"]
+[ext_resource type="PackedScene" uid="uid://8jqsiaev47iy" path="res://scenes/player_fps_controller.tscn" id="2_x7y02"]
+[ext_resource type="PackedScene" uid="uid://2krs7bt5wnmw" path="res://objects/crate.tscn" id="4_nduyp"]
+[ext_resource type="Material" uid="uid://cfly3h7yohhu2" path="res://assets/materials/grid_material_02.tres" id="5_kx4fm"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_dq80n"]
+panorama = ExtResource("1_ru68g")
+
+[sub_resource type="Sky" id="Sky_205lf"]
+sky_material = SubResource("PanoramaSkyMaterial_dq80n")
+
+[sub_resource type="Environment" id="Environment_gga4f"]
+background_mode = 2
+sky = SubResource("Sky_205lf")
+ssao_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nmlsd"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_wmsbd"]
+size = Vector2(10, 10)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gga4f")
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Lights"]
+transform = Transform3D(0.685081, -0.274961, 0.674582, -0.158546, 0.847551, 0.506478, -0.711004, -0.453931, 0.537047, 0, 4.62063, 0)
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Ground" type="Node3D" parent="Environment"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Environment/Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Ground/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_nmlsd")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/Ground"]
+material_override = ExtResource("1_r0qbb")
+mesh = SubResource("PlaneMesh_wmsbd")
+
+[node name="Crate" parent="Environment" instance=ExtResource("4_nduyp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94516, 0.50203, -1.92652)
+material_override = ExtResource("5_kx4fm")
+
+[node name="Crate2" parent="Environment" instance=ExtResource("4_nduyp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05484, 0.50203, 3.07348)
+material_override = ExtResource("5_kx4fm")
+
+[node name="Crate3" parent="Environment" instance=ExtResource("4_nduyp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94516, 0.50203, -0.926519)
+material_override = ExtResource("5_kx4fm")
+
+[node name="Crate4" parent="Environment" instance=ExtResource("4_nduyp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94516, 1.50203, -1.92652)
+material_override = ExtResource("5_kx4fm")
+
+[node name="PlayerFpsController" parent="." instance=ExtResource("2_x7y02")]
