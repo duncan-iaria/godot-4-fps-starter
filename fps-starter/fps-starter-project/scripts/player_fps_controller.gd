@@ -1,10 +1,13 @@
 extends CharacterBody3D
 
 
-@export var speed: float = 5.0
 @export var jump_velocity: float = 4.5
-@export var crouch_speed: float = 7.0;
+@export var crouch_animation_speed: float = 7.0;
 
+@export var DEFAULT_MOVE_SPEED: float = 5.0;
+@export var CROUCHING_MOVE_SPEED: float = 2.0;
+
+@export var IS_TOGGLE_CROUCH: bool = true;
 @export var MOUSE_SENSITIVITY: float = 0.25;
 @export var TILT_LOWER_LIMIT = deg_to_rad(-90.0);
 @export var TILT_UPPER_LIMIT = deg_to_rad(90.0);
@@ -19,23 +22,35 @@ var _camera_rotation: Vector3;
 var _mouse_input: bool = false;
 var _rotation_input: float;
 var _tilt_input: float;
+var _current_player_move_speed: float;
 
 var _is_crouching: bool = false;
 
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;
-	
 	CROUCH_SHAPECAST.add_exception(self);
+	
+	_current_player_move_speed = DEFAULT_MOVE_SPEED;
+	
 
 
 func _input(event: InputEvent) -> void:
 	# Quick game
 	if event.is_action_pressed("quit"):
 		get_tree().quit();
-	
-	if event.is_action_pressed("crouch"):
+		
+	if event.is_action_pressed("crouch") and is_on_floor() and IS_TOGGLE_CROUCH:
 		toggle_crouch();
+	
+	if event.is_action_pressed("crouch") and is_on_floor() and !IS_TOGGLE_CROUCH:
+		crouching(true);
+	
+	if event.is_action_released("crouch") and !IS_TOGGLE_CROUCH:
+		if CROUCH_SHAPECAST.is_colliding() == false:
+			crouching(false);
+		else:
+			_uncrouch_check();
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -62,11 +77,11 @@ func _physics_process(delta: float) -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
+		velocity.x = direction.x * _current_player_move_speed
+		velocity.z = direction.z * _current_player_move_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, speed)
-		velocity.z = move_toward(velocity.z, 0, speed)
+		velocity.x = move_toward(velocity.x, 0, _current_player_move_speed)
+		velocity.z = move_toward(velocity.z, 0, _current_player_move_speed)
 
 	move_and_slide()
 
@@ -90,11 +105,35 @@ func _update_camera(delta: float) -> void:
 
 func toggle_crouch() -> void:
 	if _is_crouching and CROUCH_SHAPECAST.is_colliding() == false:
-		print("CROUCHING");
-		ANIMATION_PLAYER.play("crouch", -1, -crouch_speed, true);
+		crouching(false);
 	elif !_is_crouching:
-		print("NOT CROUCH");
-		ANIMATION_PLAYER.play("crouch", -1, crouch_speed);
+		crouching(true);
+
+
+func crouching(state: bool):
+	match state:
+		true:
+			ANIMATION_PLAYER.play("crouch", -1, crouch_animation_speed);
+			set_movement_speed("crouching");
+		false:
+			ANIMATION_PLAYER.play("crouch", -1, -crouch_animation_speed, true);
+			set_movement_speed("default");
+			
+
+func _uncrouch_check():
+	if CROUCH_SHAPECAST.is_colliding() == false:
+		crouching(false);
+	if CROUCH_SHAPECAST.is_colliding() == true:
+		await get_tree().create_timer(0.1).timeout;
+		_uncrouch_check();
+		
+
+func set_movement_speed(state: String):
+	match state:
+		"default":
+			_current_player_move_speed = DEFAULT_MOVE_SPEED;
+		"crouching": 
+			_current_player_move_speed = CROUCHING_MOVE_SPEED;
 
 
 func _on_animation_player_animation_started(anim_name: StringName) -> void:

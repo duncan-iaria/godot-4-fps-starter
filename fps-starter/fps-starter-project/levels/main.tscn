@@ -70,5 +70,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -4)
 [node name="PlatformLow" parent="Environment" instance=ExtResource("5_jg3my")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -5)
 
-[node name="PlayerFpsController" parent="." node_paths=PackedStringArray("CAMERA_CONTROLLER") instance=ExtResource("2_x7y02")]
+[node name="PlayerFpsController" parent="." node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATION_PLAYER", "CROUCH_SHAPECAST") instance=ExtResource("2_x7y02")]
 CAMERA_CONTROLLER = NodePath("CameraController/Camera3D")
+ANIMATION_PLAYER = NodePath("AnimationPlayer")
+CROUCH_SHAPECAST = NodePath("ShapeCast3D")
