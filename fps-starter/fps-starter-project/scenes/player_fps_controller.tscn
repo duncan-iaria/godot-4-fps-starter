@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://8jqsiaev47iy"]
+[gd_scene load_steps=9 format=3 uid="uid://8jqsiaev47iy"]
 
 [ext_resource type="Script" path="res://scripts/player_fps_controller.gd" id="1_306us"]
+[ext_resource type="Script" path="res://scripts/ui_reticle.gd" id="2_0mm1m"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8min"]
 
@@ -94,7 +95,6 @@ _data = {
 
 [node name="PlayerFpsController" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATION_PLAYER", "CROUCH_SHAPECAST")]
 script = ExtResource("1_306us")
-IS_TOGGLE_CROUCH = false
 CAMERA_CONTROLLER = NodePath("CameraController/Camera3D")
 ANIMATION_PLAYER = NodePath("AnimationPlayer")
 CROUCH_SHAPECAST = NodePath("ShapeCast3D")
@@ -125,5 +125,49 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 shape = SubResource("SphereShape3D_jtyns")
 target_position = Vector3(0, 0.5, 0)
 debug_shape_custom_color = Color(0, 0.854902, 0.14902, 1)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Reticle" type="CenterContainer" parent="UI" node_paths=PackedStringArray("PLAYER_CONTROLLER", "RETICLE_LINES")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_0mm1m")
+PLAYER_CONTROLLER = NodePath("../..")
+RETICLE_LINES = [NodePath("Top"), NodePath("Right"), NodePath("Bottom"), NodePath("Left")]
+RETICLE_DISTANCE = 4.0
+DOT_RADIUS = 2.0
+
+[node name="Top" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 2.0
+
+[node name="Right" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 2.0
+
+[node name="Bottom" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(0, 5, 0, 15)
+width = 2.0
+
+[node name="Left" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 2.0
 
 [connection signal="animation_started" from="AnimationPlayer" to="." method="_on_animation_player_animation_started"]

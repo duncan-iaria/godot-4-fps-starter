@@ -1,4 +1,4 @@
-extends CharacterBody3D
+class_name Player extends CharacterBody3D
 
 
 @export var jump_velocity: float = 4.5
@@ -7,7 +7,7 @@ extends CharacterBody3D
 @export var DEFAULT_MOVE_SPEED: float = 5.0;
 @export var CROUCHING_MOVE_SPEED: float = 2.0;
 
-@export var IS_TOGGLE_CROUCH: bool = true;
+@export var IS_CROUCH_TOGGLEABLE: bool = true;
 @export var MOUSE_SENSITIVITY: float = 0.25;
 @export var TILT_LOWER_LIMIT = deg_to_rad(-90.0);
 @export var TILT_UPPER_LIMIT = deg_to_rad(90.0);
@@ -16,14 +16,12 @@ extends CharacterBody3D
 @export var CROUCH_SHAPECAST: ShapeCast3D;
 
 var _mouse_rotation: Vector3;
-
 var _player_rotation: Vector3;
 var _camera_rotation: Vector3;
 var _mouse_input: bool = false;
 var _rotation_input: float;
 var _tilt_input: float;
 var _current_player_move_speed: float;
-
 var _is_crouching: bool = false;
 
 
@@ -32,21 +30,20 @@ func _ready():
 	CROUCH_SHAPECAST.add_exception(self);
 	
 	_current_player_move_speed = DEFAULT_MOVE_SPEED;
-	
 
 
 func _input(event: InputEvent) -> void:
-	# Quick game
+	# Quit game
 	if event.is_action_pressed("quit"):
 		get_tree().quit();
 		
-	if event.is_action_pressed("crouch") and is_on_floor() and IS_TOGGLE_CROUCH:
+	if event.is_action_pressed("crouch") and is_on_floor() and IS_CROUCH_TOGGLEABLE:
 		toggle_crouch();
 	
-	if event.is_action_pressed("crouch") and is_on_floor() and !IS_TOGGLE_CROUCH:
+	if event.is_action_pressed("crouch") and is_on_floor() and !IS_CROUCH_TOGGLEABLE:
 		crouching(true);
 	
-	if event.is_action_released("crouch") and !IS_TOGGLE_CROUCH:
+	if event.is_action_released("crouch") and !IS_CROUCH_TOGGLEABLE:
 		if CROUCH_SHAPECAST.is_colliding() == false:
 			crouching(false);
 		else:
