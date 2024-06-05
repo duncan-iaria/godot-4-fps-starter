@@ -22,10 +22,10 @@ func _draw():
 
 
 func adjust_reticle_lines():
-	var vel = PLAYER_CONTROLLER.get_real_velocity();
-	var origin = Vector3.ZERO;
-	var pos = Vector2.ZERO;
-	var speed = origin.distance_to(vel);
+	var origin: Vector3 = Vector3.ZERO;
+	var pos: Vector2 = Vector2.ZERO;
+	var vel: Vector3  = PLAYER_CONTROLLER.get_real_velocity();
+	var speed: float = origin.distance_to(vel);
 	
 	RETICLE_LINES[0].position = lerp(RETICLE_LINES[0].position, pos + Vector2(0, -speed * RETICLE_DISTANCE), RETICLE_SPEED);
 	RETICLE_LINES[1].position = lerp(RETICLE_LINES[1].position, pos + Vector2(speed * RETICLE_DISTANCE, 0), RETICLE_SPEED);
